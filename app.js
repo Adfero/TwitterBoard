@@ -5,6 +5,7 @@ var https = require('https');
 var oauth = require('oauth');
 var querystring = require('querystring');
 var fs = require('fs');
+var settings = require('./settings.js');
 var config = require('./config.json');
 
 function consumer() {
@@ -14,7 +15,7 @@ function consumer() {
     	config.twitter.consumerKey,
     	config.twitter.consumerSecret,
     	"1.0",
-    	config.rootUrl+"/auth/twitter/callback",
+    	config.rootUrl+"/auth/return",
     	"HMAC-SHA1"
     );   
 }
@@ -28,7 +29,7 @@ app.use(express.session());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.errorHandler());
 
-app.get('/auth/twitter', function(req, res){
+app.get('/auth', function(req, res){
 	consumer().getOAuthRequestToken(function(error, oauthToken, oauthTokenSecret, results) {
 		if (error) {
 			res.send(500);
@@ -41,7 +42,7 @@ app.get('/auth/twitter', function(req, res){
 	});
 });
 
-app.get('/auth/twitter/callback', function(req, res) {
+app.get('/auth/return', function(req, res) {
 	if (req.query.oauth_verifier) {
 		consumer().getOAuthAccessToken(req.session.oauthRequestToken, req.session.oauthRequestTokenSecret, req.query.oauth_verifier, function(error, oauthAccessToken, oauthAccessTokenSecret, results) {
 			if (error) {
@@ -50,7 +51,18 @@ app.get('/auth/twitter/callback', function(req, res) {
 			} else {
 				req.session.oauthAccessToken = oauthAccessToken;
 				req.session.oauthAccessTokenSecret = oauthAccessTokenSecret;
-				res.redirect("/");
+				var url = 'https://api.twitter.com/1.1/account/verify_credentials.json';
+				consumer().get(url, req.session.oauthAccessToken, req.session.oauthAccessTokenSecret, function (error, data, response) {
+					if (error == null) {
+						var obj = JSON.parse(data);
+						settings.updateSettings(obj.id_str,{
+							screenname: obj.screen_name,
+							id: obj.id_str
+						});
+						req.session.twitterId = obj.id;
+					}
+					res.redirect("/");
+				});
 			}
 		});
 	}
@@ -78,6 +90,31 @@ app.get('/tweets', function(req,res) {
 		});
 	}
 });
+
+app.get('/settings/account', function(req,res) {
+	if (req.session.twitterId != null) { 
+		res.setHeader('Content-Type', 'application/json');
+		res.send({
+			id: req.session.twitterId
+		});
+	} else {
+		res.send(404);
+	}
+});
+
+app.get('/settings/:twitterId', function(req,res) {
+	if (req.params.twitterId != null) {
+		settings.fetchSettings(req.params.twitterId,function(settings) {
+			res.setHeader('Content-Type', 'application/json');
+			res.send(settings);
+		});
+	}
+});
+
+app.put('/settings/:twitterId', function(req,res) {
+	res.send(200);
+});
+
 
 http.createServer(app).listen(config.express.port, function(){
 	console.log('Express server listening');

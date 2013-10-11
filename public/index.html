@@ -6,11 +6,54 @@
 		<link rel="stylesheet" href="css/style.css" type="text/css" />
 	</head>
 	<body>
+
+
+		<!-- Main Application -->
 		<div id="canvas"></div>
-		<a href="#settings">Settings</a>
+		<a href="#settings" class="settings">Settings</a>
+
+
+		<!-- Templates -->
+		<script type="text/template" id="tpl_window">
+			<div class="window <%= classes %>">
+				<h2><%= window_title %></h2>
+				<div class="content">
+					<%= content %>
+				</div>
+			</div>
+		</script>
+
+		<script type="text/template" id="tpl_form">
+			<form class="std-form <%= classes %>">
+				<%= formitems %>
+				<div class="utils">
+					<input type="submit" value="<%= submit_value %>" class="submit" />
+					<input type="button" value="Close" class="close" />
+				</div>
+			</form>
+		</script>
+
+		<script type="text/template" id="tpl_form_fieldset">
+			<fieldset class="<%= classes %>">
+				<legend><%= name %></legend>
+				<%= formrows %>
+			</fieldset>
+		</script>
+
+		<script type="text/template" id="tpl_form_row">
+			<div class="form-row <%= classes %>">
+				<label for="<%= name %>"><%= label %>:</label>
+				<%= formfield %>
+			</div>
+		</script>
+
+
+		<!-- Scripts -->
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-		<script src="js/vendor/underscore.js"></script>
-		<script src="js/vendor/backbone.js"></script>
+		<script src="js/vendor/underscore-min.js"></script>
+		<script src="js/vendor/backbone-min.js"></script>
 		<script src="js/script.js"></script>
+
+
 	</body>
 </html>

@@ -1,0 +1,135 @@
+@import '_reset.scss';
+
+$color_gray: #666;
+$color_gray_light: #aaa;
+$color_gray_light_light: #ddd;
+$color_red: #c00;
+
+body {
+	font-family: Avenir;
+	font-size: 16px;
+	line-height: 1.25em;
+	color: $color_gray;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	text-transform: uppercase;
+}
+
+#canvas {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 0;
+}
+
+a.settings {
+	position: fixed;
+	display: block;
+	width: 48px;
+	height: 48px;
+	background: url(../img/gear.png) no-repeat 0 0;
+	text-indent: -9999px;
+	bottom: 10px;
+	right: 10px;
+	z-index: 9998;
+
+	&:hover {
+		background-position: 0 -48px;
+	}
+}
+
+div.window {
+	position: fixed;
+	top: 20%;
+	right: 0;
+	left: 0;
+	width: 50%;
+	margin: auto;
+	background: white;
+	padding: 1em;
+	box-shadow: 0 0 50px rgba(0,0,0,0.2);
+	z-index: 9999;
+
+	h2 {
+		font-size: 1.5em;
+		line-height: 1em;
+		margin: 0 0 0.5em 0;
+	}
+
+	fieldset {
+		background: #fafafa;
+		padding: 2em 0.5em 0.5em 0.5em;
+		display: block;
+		position: relative;
+		margin: 0 0 1em 0;
+
+		legend {
+			display: block;
+			text-transform: uppercase;
+			top: 0.5em;
+			position: absolute;
+			font-size: 1.1em;
+			padding-bottom: 5px;
+			border-bottom: $color_gray_light_light solid 1px;
+			right: 0.5em;
+			left: 0.5em;
+		}
+	}
+
+	.form-row {
+		clear: both;
+		padding: 0.5em 0;
+		height: 1.5em;
+
+		label {
+			display: block;
+			width: 15%;
+			float: left;
+			padding-top: 0.25em;
+			color: $color_gray_light;
+		}
+
+		.field {
+			display: block;
+			float: right;
+			width: 85%;
+			box-sizing: border-box;
+		}
+
+		span.field {
+			padding-top: 0.25em;
+		}
+
+		input.field {
+			outline: none;
+			border: $color_gray_light solid 1px;
+			padding: 0.25em;
+			font-size: 1em;
+			line-height: 1em;
+			color: $color_gray;
+
+			&:focus {
+				border-color: $color_red;
+			}
+		}
+	}
+
+	.utils {
+		text-align: right;
+	}
+
+	input[type=button],
+	input[type=submit] {
+		background: $color_red;
+		color: white;
+		text-transform: uppercase;
+		padding: 0.25em 0.5em;
+		border: none;
+		outline: none;
+		font-size: 1em;
+		cursor: pointer;
+	}
+}
