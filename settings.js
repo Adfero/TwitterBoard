@@ -3,7 +3,7 @@ var settings = {};
 exports.updateSettings = function(twitterId,data) {
 	settings[twitterId] = {
 		id: twitterId,
-		theme: 'default',
+		theme: 'adfero_b',
 		account: data
 	}
 	return settings[twitterId];

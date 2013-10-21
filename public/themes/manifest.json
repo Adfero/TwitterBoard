@@ -1,3 +1,10 @@
 [
-	"adfero"
+	{
+		"id": "adfero_a",
+		"name": "Adfero A"
+	},
+	{
+		"id": "adfero_b",
+		"name": "Adfero B"
+	}
 ]
