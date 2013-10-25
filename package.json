@@ -5,6 +5,7 @@
     "express": "3.4.0",
     "oauth": "0.9.10",
     "socket.io": "0.9.16",
-    "connect": "2.9.2"
+    "connect": "2.9.2",
+    "cookie": "0.1.0"
   }
 }

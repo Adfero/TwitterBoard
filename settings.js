@@ -3,8 +3,9 @@ var settings = {};
 exports.updateSettings = function(twitterId,data) {
 	settings[twitterId] = {
 		id: twitterId,
-		theme: 'adfero_b',
-		account: data
+		theme: 'adfero',
+		account: data,
+		search: 'from:@mashable'
 	}
 	return settings[twitterId];
 };

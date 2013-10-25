@@ -57,25 +57,67 @@ exports.routeAuthReturn = function(req, res) {
 	}
 }
 
-// app.get('/tweets', function(req,res) {
-// 	if (config.twitter.staticTestFile) {
-// 		var json = fs.readFileSync(config.twitter.staticTestFile).toString();
-// 		res.setHeader('Content-Type', 'application/json');
-// 		res.send(json);
-// 	} else {
-// 		var url = 'https://api.twitter.com/1.1/search/tweets.json?'+querystring.stringify({
-// 			q:'from:@mashable',
-// 			count:100,
-// 			result_type:'recent'
-// 		});
-// 		consumer().get(url, req.session.oauthAccessToken, req.session.oauthAccessTokenSecret, function (error, data, response) {
-// 			if (error) {
-// 				res.send(500);
-// 				console.log(error);
-// 			} else {
-// 				res.setHeader('Content-Type', 'application/json');
-// 				res.send(data);
-// 			}
-// 		});
-// 	}
-// });
+var searches = {};
+
+var Search = function(session,settings,callback) {
+	this.session = session;
+	this.callback = callback;
+	this.settings = settings;
+	this.active = true;
+	this.maxId = 0;
+}
+
+Search.prototype.stop = function() {
+	this.active = false;
+	delete searches[this.settings.id];
+}
+
+Search.prototype.getURL = function() {
+	var params = {
+		q: this.settings.search,
+		count: 100,
+		result_type: 'recent'
+	};
+	if (this.maxId > 0) {
+		params.since_id = this.maxId;
+	}
+	return 'https://api.twitter.com/1.1/search/tweets.json?'+querystring.stringify(params);
+}
+
+Search.prototype.responseHandler = function(error, data, response) {
+	if (!error) {
+		var obj = JSON.parse(data);
+		if (obj && obj.statuses) {
+			var _this = this;
+			obj.statuses.forEach(function(item) {
+				if (item.id > _this.maxId) {
+					_this.maxId = item.id;
+				}
+			});
+			this.callback(obj.statuses);
+		}
+	} else {
+		console.log(error);
+	}
+}
+
+exports.startSearch = function(session,settings,callback) {
+	if (settings.id && settings.search && session.oauthAccessToken && session.oauthAccessTokenSecret) {
+		var s = new Search(session,settings,callback);
+		searches[settings.id] = s;
+		return s;
+	} else {
+		return null;
+	}
+}
+
+setInterval(function() {
+	for(var id in searches) {
+		var search = searches[id];
+		if (search.active) {
+			consumer().get(search.getURL(), search.session.oauthAccessToken, search.session.oauthAccessTokenSecret, function(error, data, response) {
+				search.responseHandler.call(search, error, data, response)
+			});
+		}
+	}
+},2000);
